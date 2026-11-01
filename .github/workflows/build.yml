@@ -34,9 +34,9 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
+      # 托管 Runner 已预装 Android SDK 且许可齐全，AGP 会按需自动安装
+      # NDK 27.3 / platform 36 / cmake 3.22.1（android-actions/setup-android@v3
+      # 会安装已弃用的 tools 包，目前必然失败，故不使用）
       - name: Build release AAR
         run: ./gradlew :MobileGlues:assembleRelease --no-daemon
 
