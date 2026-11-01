@@ -53,9 +53,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete dev-latest --yes --cleanup-tag || true
+          {
+            echo "从 [MobileGL-Dev/MobileGlues](https://github.com/MobileGL-Dev/MobileGlues) \`dev@${MG_SHA}\` 构建。"
+            echo ""
+            echo "AAR 文件名保持 \`MobileGlues-release.aar\`，可直接放入 FCL 的 \`FCL/libs/\`。"
+          } > /tmp/notes.md
           gh release create dev-latest --prerelease \
             --title "MobileGlues dev ($MG_SHA)" \
-            --notes "从 [MobileGL-Dev/MobileGlues](https://github.com/MobileGL-Dev/MobileGlues) \`dev@${MG_SHA}\` 构建。
-
-  AAR 文件名保持 \`MobileGlues-release.aar\`，可直接放入 FCL 的 \`FCL/libs/\`。" \
+            --notes-file /tmp/notes.md \
             MobileGlues/build/outputs/aar/MobileGlues-release.aar
