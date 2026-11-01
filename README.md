@@ -1,6 +1,8 @@
-# MobileGlues AAR 构建仓库
+# MobileGlues-Build
 
 为 [FoldCraftLauncher](https://github.com/FoldCraftLauncher/FoldCraftLauncher) 构建 [MobileGlues](https://github.com/MobileGL-Dev/MobileGlues) 渲染器 AAR，目标是上游 **dev 分支**。
+
+> 本仓库只是构建 wrapper（Gradle 配置 + CI），不含 MG 源码；MG 源码在上游 [MobileGL-Dev/MobileGlues](https://github.com/MobileGL-Dev/MobileGlues)。
 
 本仓库本身不含 MG 源码，只包含构建 wrapper（Gradle 配置 + CI），构建方式对齐 [AngelAuraMC/amethyst-prebuilt-libraries](https://github.com/AngelAuraMC/amethyst-prebuilt-libraries/tree/master/renderers/MobileGlues) 中 `renderers/MobileGlues` 的做法：
 
@@ -19,12 +21,12 @@
 
 产物 AAR 文件名固定为 `MobileGlues-release.aar`，可直接放入 FCL 的 `FCL/libs/` 替换内置版本；构建所用的上游 commit 记录在 artifact 名与 release 标题中。
 
-固定下载链接：`https://github.com/FCL-Team/MobileGlues/releases/download/dev-latest/MobileGlues-release.aar`
+固定下载链接：`https://github.com/FCL-Team/MobileGlues-Build/releases/download/dev-latest/MobileGlues-release.aar`
 
 ## 本地构建
 
 ```bash
-git clone https://github.com/FCL-Team/MobileGlues.git
+git clone https://github.com/FCL-Team/MobileGlues-Build.git
 cd MobileGlues
 git clone --depth 1 --branch dev --recurse-submodules --shallow-submodules \
   https://github.com/MobileGL-Dev/MobileGlues.git MobileGlues/MobileGlues
