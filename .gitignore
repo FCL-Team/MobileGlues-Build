@@ -1,0 +1,8 @@
+.gradle/
+build/
+
+# CI / 本地构建时克隆的 MobileGlues dev 源码
+MobileGlues/MobileGlues/
+
+local.properties
+.idea/
