@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
   schedule:
-    # 每周五 UTC 18:00（北京时间周六 02:00）跟随上游 dev 分支构建一次
+    # 每周五 UTC 18:00（北京时间周六 02:00）跟随 FCL fork 的 dev-fcl 分支构建一次
     - cron: "0 18 * * 5"
 
 permissions:
@@ -20,21 +20,15 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Clone MobileGlues dev
+      # 源码源为 FCL-Team/MobileGlues 的 dev-fcl 分支：上游 dev + FCL 补丁（直接提交在 fork 上），
+      # 三方子模块（glslang/SPIRV-Cross/xxhash/perfetto/ska）仍指向上游 gitlink
+      - name: Clone MobileGlues dev-fcl
         run: |
-          git clone --depth 1 --branch dev --recurse-submodules --shallow-submodules \
-            https://github.com/MobileGL-Dev/MobileGlues.git MobileGlues/MobileGlues
+          git clone --depth 1 --branch dev-fcl --recurse-submodules --shallow-submodules \
+            https://github.com/FCL-Team/MobileGlues.git MobileGlues/MobileGlues
           MG_SHA=$(git -C MobileGlues/MobileGlues rev-parse HEAD)
           echo "MG_SHA=${MG_SHA::8}" >> "$GITHUB_ENV"
-          echo "Building MobileGL-Dev/MobileGlues dev@${MG_SHA::8}"
-
-      # 上游 dev 漂移导致补丁无法应用时直接失败，避免产出缺补丁的 AAR
-      - name: Apply patches
-        run: |
-          for p in patches/*.patch; do
-            echo "Applying $p"
-            git -C MobileGlues/MobileGlues apply --whitespace=nowarn "$GITHUB_WORKSPACE/$p"
-          done
+          echo "Building FCL-Team/MobileGlues dev-fcl@${MG_SHA::8}"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -62,7 +56,7 @@ jobs:
         run: |
           gh release delete dev-latest --yes --cleanup-tag || true
           {
-            echo "从 [MobileGL-Dev/MobileGlues](https://github.com/MobileGL-Dev/MobileGlues) \`dev@${MG_SHA}\` 构建。"
+            echo "从 [FCL-Team/MobileGlues](https://github.com/FCL-Team/MobileGlues) \`dev-fcl@${MG_SHA}\` 构建（上游 dev + FCL 补丁）。"
             echo ""
             echo "AAR 文件名保持 \`MobileGlues-release.aar\`，可直接放入 FCL 的 \`FCL/libs/\`。"
           } > /tmp/notes.md
