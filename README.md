@@ -10,6 +10,14 @@
 - MG 是纯 native 库（无 Java 源码），产物 = 4 个 ABI 的 `libmobileglues.so` + 空 `classes.jar` + LGPL 许可证资产。
 - FCL 侧契约：`POJAV_RENDERER=opengles3_mobileglues`，EGL 库名 `libmobileglues.so`。
 
+## 补丁
+
+`patches/` 下的补丁在构建前按文件名顺序应用到上游源码，上游 dev 漂移导致补丁无法应用时 CI 直接失败：
+
+| 补丁 | 内容 |
+| --- | --- |
+| `0001-shader-source-fixes.patch` | `glShaderSource` 校验参数（负 count、空指针、非着色器对象），按字节长度拼接源码（含内嵌 NUL），驱动侧以单段显式长度提交；转换失败时提交原文而非保留旧源码；被拒调用的 GL 错误按上下文记录，经 `glGetError` 报告 |
+
 ## CI
 
 `.github/workflows/build.yml`：
@@ -30,6 +38,7 @@ git clone https://github.com/FCL-Team/MobileGlues-Build.git
 cd MobileGlues
 git clone --depth 1 --branch dev --recurse-submodules --shallow-submodules \
   https://github.com/MobileGL-Dev/MobileGlues.git MobileGlues/MobileGlues
+for p in patches/*.patch; do git -C MobileGlues/MobileGlues apply "../../$p"; done
 ./gradlew :MobileGlues:assembleRelease
 ```
 
@@ -38,4 +47,5 @@ git clone --depth 1 --branch dev --recurse-submodules --shallow-submodules \
 ## 维护提示
 
 - 上游 dev 若修改构建配置（`ndkVersion`、`compileSdk`、CMake 要求等），需同步更新 `MobileGlues/build.gradle.kts`（该文件是上游配置的本地副本 + assets 叠加）。
+- 补丁应用失败时，在最新 dev 上重新生成补丁（`git diff -- MobileGlues-cpp`）并替换 `patches/` 中的文件。
 - AGP / Gradle 版本固定在根 `build.gradle.kts`（AGP 8.11.2）与 `gradle/wrapper/gradle-wrapper.properties`（Gradle 8.14.4），与 amethyst 一致。
